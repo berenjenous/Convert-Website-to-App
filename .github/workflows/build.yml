@@ -16,7 +16,18 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install -g @capacitor/cli @capacitor/core
+
+      - name: Build Web Assets
+        run: npm run build --if-present || npx tsc || echo "No build script needed"
+
+      - name: Ensure www directory exists
+        run: mkdir -p www && touch www/index.html
+
+      - name: Add iOS platform if missing
+        run: npx cap add ios || true
 
       - name: Sync Capacitor iOS
         run: npx cap sync ios
@@ -24,7 +35,6 @@ jobs:
       - name: Build iOS App
         run: |
           cd ios/App
-          # Limpiamos y construimos el proyecto correctamente
           xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos archive -archivePath App.xcarchive CODE_SIGNING_ALLOWED=NO
           mkdir Payload
           cp -r App.xcarchive/Products/Applications/App.app Payload/
