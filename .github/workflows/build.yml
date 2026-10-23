@@ -1,0 +1,39 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-13
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Web App
+        run: npm run build --if-present
+
+      - name: Sync Capacitor iOS
+        run: npx cap sync ios
+
+      - name: Build iOS App
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos archive -archivePath App.xcarchive CODE_SIGNING_ALLOWED=NO
+          mkdir Payload
+          cp -r App.xcarchive/Products/Applications/App.app Payload/
+          zip -r Webrune.ipa Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Webrune-IPA
+          path: ios/App/Webrune.ipa
