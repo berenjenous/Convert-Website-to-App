@@ -1,9 +1,10 @@
-import type { CapacitorConfig } from '@capacitor/cli';
-
-const config: CapacitorConfig = {
-  appId: 'com.botgroupllc.convertwebsitetoapp',
-  appName: 'The Lion',
-  webDir: 'www'
-};
-
-export default config;
+{
+  "appId": "io.ionic.starter",
+  "appName": "Webrune",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://webrune.mrpowergamerbr.com",
+    "cleartext": true
+  }
+}
