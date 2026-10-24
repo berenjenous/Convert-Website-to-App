@@ -17,9 +17,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          npm install --legacy-peer-deps
           npm install -g @capacitor/cli
-          npm install @capacitor/core @capacitor/ios
+          npm install @capacitor/core@latest @capacitor/ios@latest --legacy-peer-deps
 
       - name: Build Web Assets
         run: npm run build --if-present || npx tsc || echo "No build script needed"
