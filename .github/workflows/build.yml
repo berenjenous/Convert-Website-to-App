@@ -27,9 +27,9 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
-      - name: Fix Capacitor Config & Structure
+      - name: Configure Capacitor & Add iOS
         run: |
-          rm -f capacitor.config.ts capacitor.config.js
+          # Aseguramos un capacitor.config.json válido con el appId requerido
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.webrune.app",
@@ -37,9 +37,13 @@ jobs:
             "webDir": "www"
           }
           EOF
-          rm -rf ios
-          npx cap add ios || true
-          npx cap sync ios || true
+
+          # Si la carpeta ios no tiene la plataforma configurada correctamente, la inicializamos de forma limpia
+          if [ ! -d "ios/App" ]; then
+            npx cap add ios
+          else
+            npx cap sync ios
+          fi
 
       - name: Install CocoaPods
         run: |
