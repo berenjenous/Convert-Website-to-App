@@ -32,16 +32,15 @@ jobs:
       - name: Sync Capacitor iOS
         run: npx cap sync ios
 
-      - name: Fix Swift Version for Plugins
+      - name: Install CocoaPods
         run: |
-          # Forzamos una versión compatible de Swift en los pods/plugins si es necesario
           cd ios/App
-          pod install || true
+          pod install
 
       - name: Build iOS App
         run: |
           cd ios/App
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos archive -archivePath App.xcarchive CODE_SIGNING_ALLOWED=NO SWIFT_VERSION=5.0
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos archive -archivePath App.xcarchive CODE_SIGNING_ALLOWED=NO
           mkdir Payload
           cp -r App.xcarchive/Products/Applications/App.app Payload/
           zip -r Webrune.ipa Payload
