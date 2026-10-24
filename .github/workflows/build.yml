@@ -27,9 +27,10 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
-      - name: Configure Capacitor & Add iOS
+      - name: Force Initialize Capacitor iOS Platform
         run: |
-          # Aseguramos un capacitor.config.json válido con el appId requerido
+          # 1. Limpiamos configuración vieja y forzamos el config.json
+          rm -f capacitor.config.ts capacitor.config.js
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.webrune.app",
@@ -38,11 +39,25 @@ jobs:
           }
           EOF
 
-          # Si la carpeta ios no tiene la plataforma configurada correctamente, la inicializamos de forma limpia
-          if [ ! -d "ios/App" ]; then
-            npx cap add ios
-          else
-            npx cap sync ios
+          # 2. Borramos cualquier rastro corrupto de ios
+          rm -rf ios
+
+          # 3. Inicializamos la plataforma forzando la creación mediante npx cap sync (que autogenera ios si no está)
+          npx cap sync ios
+
+          # 4. Blindaje total: si por alguna razón el Podfile sigue sin estar, lo creamos a la fuerza
+          mkdir -p ios/App
+          if [ ! -f ios/App/Podfile ]; then
+            cat << 'EOF' > ios/App/Podfile
+          require_relative '../../node_modules/@capacitor/ios/scripts/pods'
+
+          platform :ios, '13.0'
+          use_frameworks!
+
+          target 'App' do
+            capacitor_pods
+          end
+          EOF
           fi
 
       - name: Install CocoaPods
