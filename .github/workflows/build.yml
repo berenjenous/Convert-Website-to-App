@@ -26,9 +26,19 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
+      - name: Ensure valid Capacitor Config
+        run: |
+          # Creamos o aseguramos un capacitor.config.json con el appId obligatorio que pide Capacitor
+          cat << 'EOF' > capacitor.config.json
+          {
+            "appId": "com.webrune.app",
+            "appName": "Webrune",
+            "webDir": "www"
+          }
+          EOF
+
       - name: Clean and Recreate iOS Platform
         run: |
-          # Borramos la carpeta ios vieja del template para evitar archivos rotos o faltantes
           rm -rf ios
           npx cap add ios
           npx cap sync ios
