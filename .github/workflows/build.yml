@@ -26,11 +26,10 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
-      - name: Add iOS platform if missing
-        run: npx cap add ios || true
-
-      - name: Sync Capacitor iOS
-        run: npx cap sync ios
+      - name: Add iOS platform if missing and update
+        run: |
+          npx cap add ios || true
+          npx cap update ios
 
       - name: Install CocoaPods
         run: |
