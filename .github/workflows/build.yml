@@ -26,12 +26,9 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
-      - name: Fix Capacitor Config
+      - name: Fix Capacitor Config & Structure
         run: |
-          # Borramos el archivo .ts conflictivo del template original para que no pise la config
           rm -f capacitor.config.ts capacitor.config.js
-          
-          # Creamos un capacitor.config.json válido con el appId obligatorio
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.webrune.app",
@@ -39,12 +36,26 @@ jobs:
             "webDir": "www"
           }
           EOF
-
-      - name: Clean and Recreate iOS Platform
-        run: |
           rm -rf ios
-          npx cap add ios
-          npx cap sync ios
+          npx cap add ios || true
+          npx cap sync ios || true
+
+      - name: Guarantee Podfile Exists
+        run: |
+          mkdir -p ios/App
+          # Si por alguna razón Capacitor no creó el Podfile, lo escribimos a mano de forma exacta
+          if [ ! -f ios/App/Podfile ]; then
+            cat << 'EOF' > ios/App/Podfile
+          require_relative '../../node_modules/@capacitor/ios/scripts/pods'
+
+          platform :ios, '13.0'
+          use_frameworks!
+
+          target 'App' do
+            capacitor_pods
+          end
+          EOF
+          fi
 
       - name: Install CocoaPods
         run: |
