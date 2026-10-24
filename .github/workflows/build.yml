@@ -18,7 +18,8 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          npm install -g @capacitor/cli @capacitor/core
+          npm install -g @capacitor/cli
+          npm install @capacitor/core @capacitor/ios
 
       - name: Build Web Assets
         run: npm run build --if-present || npx tsc || echo "No build script needed"
@@ -39,23 +40,6 @@ jobs:
           rm -rf ios
           npx cap add ios || true
           npx cap sync ios || true
-
-      - name: Guarantee Podfile Exists
-        run: |
-          mkdir -p ios/App
-          # Si por alguna razón Capacitor no creó el Podfile, lo escribimos a mano de forma exacta
-          if [ ! -f ios/App/Podfile ]; then
-            cat << 'EOF' > ios/App/Podfile
-          require_relative '../../node_modules/@capacitor/ios/scripts/pods'
-
-          platform :ios, '13.0'
-          use_frameworks!
-
-          target 'App' do
-            capacitor_pods
-          end
-          EOF
-          fi
 
       - name: Install CocoaPods
         run: |
