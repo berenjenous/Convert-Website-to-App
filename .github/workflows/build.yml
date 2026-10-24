@@ -26,10 +26,12 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
-      - name: Add iOS platform if missing and update
+      - name: Clean and Recreate iOS Platform
         run: |
-          npx cap add ios || true
-          npx cap update ios
+          # Borramos la carpeta ios vieja del template para evitar archivos rotos o faltantes
+          rm -rf ios
+          npx cap add ios
+          npx cap sync ios
 
       - name: Install CocoaPods
         run: |
