@@ -26,9 +26,12 @@ jobs:
       - name: Ensure www directory exists
         run: mkdir -p www && touch www/index.html
 
-      - name: Ensure valid Capacitor Config
+      - name: Fix Capacitor Config
         run: |
-          # Creamos o aseguramos un capacitor.config.json con el appId obligatorio que pide Capacitor
+          # Borramos el archivo .ts conflictivo del template original para que no pise la config
+          rm -f capacitor.config.ts capacitor.config.js
+          
+          # Creamos un capacitor.config.json válido con el appId obligatorio
           cat << 'EOF' > capacitor.config.json
           {
             "appId": "com.webrune.app",
